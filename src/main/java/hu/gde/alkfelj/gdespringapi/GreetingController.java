@@ -27,7 +27,22 @@ public class GreetingController {
 
     @PostMapping("/savegreeting")
     public Greeting saveGreeting(@RequestParam(value = "name", defaultValue = "World") String name) {
-        GreetingEntity entity = repository.save(new GreetingEntity(new Greeting(counter.incrementAndGet(), String.format(template, name))));
+        long id = counter.incrementAndGet();
+        Greeting greeting = createGreeting(id, name);
+        GreetingEntity entity = repository.save(createGreetingEntity(greeting));
+        return createGreeting(entity);
+    }
+
+    private Greeting createGreeting(long id, String name) {
+        String content = String.format(template, name);
+        return new Greeting(id, content);
+    }
+
+    private GreetingEntity createGreetingEntity(Greeting greeting) {
+        return new GreetingEntity(greeting);
+    }
+
+    private Greeting createGreeting(GreetingEntity entity) {
         return new Greeting(entity.getId(), entity.getContent());
     }
 }
